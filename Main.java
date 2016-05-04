@@ -66,18 +66,16 @@ public class Main {
         Leaf currentStart;
         total = 0;
         fileNum = 0;
+
+        Queue<Leaf> queue = new LinkedList<Leaf>();
         try {
-            f_in = new
-                    FileInputStream(serializeFile);
 
-            ObjectInputStream obj_in =
-                    new ObjectInputStream (f_in);
 
-            Queue<Leaf> queue = new LinkedList<Leaf>();
             //    queue.add(root);
 
 
-            removalEnd = root.getPointers().size()-2;
+            //         removalEnd = root.getPointers().size()-2;
+            // removalEnd = 29;
 
             for (int i = removalStart; i < removalEnd; i++) {
 
@@ -85,9 +83,9 @@ public class Main {
                 f_in = new FileInputStream(serializeFile + fileNum + ".data");
                 fileNum++;
                 // Write object with ObjectOutputStream
-                obj_in = new
-                        ObjectInputStream(f_in);
-                System.out.println("file done!");
+                ObjectInputStream obj_in = new
+                        ObjectInputStream(new BufferedInputStream(f_in));
+                System.out.println("file done!" + fileNum);
 
 
                 if ((leaf = (Leaf) obj_in.readObject()) != null) {
@@ -106,14 +104,6 @@ public class Main {
 
             }
 
-            for (Leaf e : queue)
-            {
-                root.insertPointers(e);
-                System.out.println("DONE");
-
-            }
-
-            System.out.println("Size: " + root.getMaxSize(0));
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -127,32 +117,110 @@ public class Main {
             e.printStackTrace();
         }
 
+        for (Leaf e : queue)
+        {
+            root.insertPointers(e);
+            System.out.println("DONE");
+
+        }
+
+        System.out.println("Size: " + root.getMaxSize(0));
+
 
         return root;
 
     }
-    private static void serializeTreeNonRecursive(Leaf root)
-    {
-        FileOutputStream f_out = null;
 
+
+    private static ArrayList<Tweet> deserializeTweets(ArrayList<Tweet> tweets) {
+        int start = 0;
+
+        long startTime = System.currentTimeMillis();
+
+        ArrayList<Tweet> tweetToReturn = null;
+        System.out.println("I'M INSIDE! ");
         try {
-            f_out = new
-                    FileOutputStream(serializeFile);
+
+            String fileName = serializeFile + "tweets" + start + ".ser";
+            System.out.println(fileName);
+
+            FileInputStream f_in = new
+                    FileInputStream(fileName);
+
+            ObjectInputStream obj_in =
+                    new ObjectInputStream(new BufferedInputStream(f_in));
+
+
+
+
+            tweetToReturn = (ArrayList<Tweet>)obj_in.readObject();
+            System.out.println("SIZE! " + tweetToReturn.size());
+
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch( EOFException e) {
+            System.out.println("END OF FILE! IN THING!!!!");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+        return tweetToReturn;
+    }
+
+
+    private static void serializeTweets(ArrayList<Tweet> tweets)
+    {
+        try {
+            FileOutputStream f_out = new
+                    FileOutputStream(serializeFile + "tweets" + "0" + ".ser");
+
 
             // Write object with ObjectOutputStream
             ObjectOutputStream obj_out = new
-                    ObjectOutputStream(f_out);
+                    ObjectOutputStream(new BufferedOutputStream(f_out));
+
+            obj_out.writeObject(tweets);
+
+            obj_out.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void serializeTreeNonRecursive(Leaf root)
+    {
+
+        FileOutputStream f_out = null;
+        ObjectOutputStream obj_out = null;
+
+        try {
+
 
             Queue<Leaf> queue = new LinkedList<Leaf>();
+
 
             Queue<Leaf> removedQueue = new LinkedList<Leaf>();
 
             removedQueue.add(root);
 
+
             removalEnd = root.getPointers().size()-2;
 
             for (int i = removalStart; i < removalEnd; i ++)
             {
+
                 Leaf l = root.deleteLeaf(0);
                 removedQueue.add(l);
             }
@@ -161,12 +229,12 @@ public class Main {
             while (!removedQueue.isEmpty()) {
                 queue.add(removedQueue.remove());
 
-                    obj_out.close();
-                    f_out = new FileOutputStream(serializeFile + fileNum + ".data");
-                    fileNum++;
-                    // Write object with ObjectOutputStream
-                    obj_out = new
-                            ObjectOutputStream(f_out);
+
+                f_out = new FileOutputStream(serializeFile + fileNum + ".data");
+                fileNum++;
+                // Write object with ObjectOutputStream
+                obj_out = new
+                        ObjectOutputStream(new BufferedOutputStream(f_out));
 
 
                 while (!queue.isEmpty()) {
@@ -178,6 +246,10 @@ public class Main {
                     total += 1;
 
                 }
+
+                obj_out.close();
+
+
             }
 
         } catch (FileNotFoundException e) {
@@ -185,5 +257,6 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
-}
