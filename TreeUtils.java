@@ -21,7 +21,7 @@ public class TreeUtils {
             
             // Write object with ObjectOutputStream
             ObjectInputStream obj_in = new
-                ObjectInputStream(f_in);
+                ObjectInputStream(new BufferedInputStream(f_in));
             
             while ((tweet = (Tweet) obj_in.readObject()) != null) {    
                 HashMap<String, ArrayDeque<Integer>> feats = tweet.getFeats();
