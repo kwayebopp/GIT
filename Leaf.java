@@ -1,3 +1,4 @@
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +11,9 @@ public class Leaf implements Comparable<Leaf>, Serializable {
     private int size;
     private ArrayList<Nodes> inLeaf = new ArrayList<Nodes>();
     private ArrayList<Leaf> pointers = new ArrayList<Leaf>();
+
+    private int totalBelow = 0;
+    private static int count = 0;
 
 
 
@@ -30,7 +34,7 @@ public class Leaf implements Comparable<Leaf>, Serializable {
 
 
         inLeaf.add(node);
-        Collections.sort(inLeaf);
+        inLeaf.sort(Nodes.nodesComparator);
         size++;
         return size;
     }
@@ -40,17 +44,24 @@ public class Leaf implements Comparable<Leaf>, Serializable {
     {
         if (inLeaf.contains(node))
             return true;
-      //  for (Nodes n : inLeaf)
-    //    {
-     //       if (n.getValue().toString().equals(node.getValue().toString()))
-      //          return true;
+        //  for (Nodes n : inLeaf)
+        //    {
+        //       if (n.getValue().toString().equals(node.getValue().toString()))
+        //          return true;
 //
 
-      //  }
+        //  }
         return false;
-       // return this.getNodes().contains(node);
+        // return this.getNodes().contains(node);
     }
-    
+
+
+    public void incrementTotalBelow()
+    {
+        totalBelow++;
+    }
+
+
     public void insertPointers(Leaf pointer)
     {
         pointer.setUpPointer(this);
@@ -73,10 +84,24 @@ public class Leaf implements Comparable<Leaf>, Serializable {
 
         }
         */
-      //  pointers.add(i, pointer);
+        //  pointers.add(i, pointer);
         pointers.add(pointer);
-        Collections.sort(pointers);
+        pointers.sort(Leaf::compareTo);
+
+
+
+
     }
+
+    public void setCount(int count)
+    {
+        this.count = count;
+    }
+    public int getCount()
+    {
+        return count;
+    }
+
 
 
 
@@ -85,27 +110,37 @@ public class Leaf implements Comparable<Leaf>, Serializable {
         String value = (String)node.getValue();
 
         int i = 0;
-      //  inLeaf.
+        //  inLeaf.
 
-     //   int pointerSize = pointers.size() -1;
+        //   int pointerSize = pointers.size() -1;
         int pointerSize = inLeaf.size() - 1;
         int currentTraversal = 0;
 
-      //  currentTraversal = pointerSize/2;
+        //  currentTraversal = pointerSize/2;
+
+
+
+
+
+
+        //   return binarySearchRelevantPointer(node, currentTraversal, pointerSize);
+
+
 /*
-
-     //   return binarySearchRelevantPointer(node, currentTraversal, pointerSize);
-
         inLeaf.sort(Nodes::compareTo);
-     //   pointers.sort(Leaf::compareTo);
+        //   pointers.sort(Leaf::compareTo);
         int result = Collections.binarySearch(inLeaf, node);
 
+        // if found within index, we want the pointer above it.
+        result += 1;
 
         if (result < 0)
         {
             result += 1;
             result *= -1;
         }
+
+        /*
 
         System.out.println("I value: " + i + "Result: " + result);
         for (Nodes n : inLeaf)
@@ -119,15 +154,19 @@ public class Leaf implements Comparable<Leaf>, Serializable {
         if ((pointers.size() > result)) //&& (i != 0))
         {
             //   System.out.println("Return: " + pointers.get(i));
-            System.out.println("INSERT");
+            //   System.out.println("INSERT");
             return pointers.get(result);
         }
 
         return null;
 
-    */
+*/
 
 
+
+
+        //Argument less than, get positive
+        // if argument is more than, get negative
         for (Nodes e : inLeaf)
         {
        //     System.out.println("E: " + e.getValue() + " node: " + node.getValue());
@@ -144,13 +183,19 @@ public class Leaf implements Comparable<Leaf>, Serializable {
 
             i++;
         }
+
+
     //    Collections.sort(pointers);
         if ((pointers.size() > i)) //&& (i != 0))
         {
          //   System.out.println("Return: " + pointers.get(i));
+
             return pointers.get(i);
         }
+
         return null;
+
+
     }
 
     /*
@@ -191,14 +236,16 @@ public class Leaf implements Comparable<Leaf>, Serializable {
     {
 
         int currentTraversal = lo + (max- lo)/2;
-        
+
+
         if (lo > max || (currentTraversal >= pointers.size()))
             return null;
 
         if (inLeaf.size() == 0)
+        {
             return pointers.get(currentTraversal);
 
-        
+        }
         else if (currentTraversal == 0)
         {
             if (inLeaf.get(currentTraversal).compareTo(node) <= 0)
@@ -214,10 +261,15 @@ public class Leaf implements Comparable<Leaf>, Serializable {
         }
         else
             binarySearchRelevantPointer(node, currentTraversal + 1, max);
+
+
         return null;
+
     }
 
     public static Comparator<Leaf> leafComparator = new Comparator<Leaf>() {
+
+
         public int compare(Leaf o1, Leaf o2) {
 
             if (((o1 == null) || (o2 == null)))
@@ -227,6 +279,9 @@ public class Leaf implements Comparable<Leaf>, Serializable {
 
         }
     };
+
+
+
 
     public Leaf getUpPointer()
     {
@@ -288,13 +343,15 @@ public class Leaf implements Comparable<Leaf>, Serializable {
     public Leaf deleteLeaf(int num)
     {
         Leaf l = this.pointers.remove(num);
-        Collections.sort(this.pointers);
+        this.pointers.sort(leafComparator);
         l.setUpPointer(null);
 
         return l;
 
 
     }
+
+
 
     public void deleteNode(Nodes node)
     {
@@ -331,14 +388,14 @@ public class Leaf implements Comparable<Leaf>, Serializable {
             }
         }
 
-       for (Leaf e : this.pointers)
-       {
-           if (e != null)
-            for (Leaf f : e.getPointers())
-            {
-                if (f != null)
-                    concat += "Leaf " + e.getFirstValue().getValue()+ " In leaf " + f.toString() + "\n";
-            }
+        for (Leaf e : this.pointers)
+        {
+            if (e != null)
+                for (Leaf f : e.getPointers())
+                {
+                    if (f != null)
+                        concat += "Leaf " + e.getFirstValue().getValue()+ " In leaf " + f.toString() + "\n";
+                }
         }
         return concat;
     }
@@ -386,7 +443,7 @@ public class Leaf implements Comparable<Leaf>, Serializable {
         Leaf leaf = findLeafToInsert(this, node);
         for (Nodes e: leaf.getNodes())
         {
-            System.out.println("NOde hold: " + e.getValue() + " Search term:" + value);
+
             if (e.getValue().equals(value))
             {
                 return e;
@@ -395,6 +452,11 @@ public class Leaf implements Comparable<Leaf>, Serializable {
 
         return null;
     }
+
+
+
+
+
 
     public static Leaf addToTree(Leaf root, Object obj, int leafSize, int tweet)//String[] values)//
     {
@@ -419,11 +481,21 @@ public class Leaf implements Comparable<Leaf>, Serializable {
             root = first;
             //  System.out.println(root);
         }
+//
+
+
+
+
+
+
         //    System.out.println(" STEPS!!: " + total);
         //    System.out.println(" NUMBER OF UNIQUE!: " + (wordTotal - repeatedWords));
         //     System.out.println(" Number of Repeated " + repeatedWords);
         return root;
     }
+
+
+
 
     private static void insertNode(Leaf first, Nodes node, int leafSize, Leaf pointer, Integer tweet)
     {
@@ -433,8 +505,11 @@ public class Leaf implements Comparable<Leaf>, Serializable {
                 first.getNodes().get(first.getNodes().indexOf(node)).setTweet(tweet, 0);
             return;
         }
-        
+
+
+
         Leaf root = first.getUpPointer();
+
 
         Leaf newLeaf;
         if (first.getSize() < leafSize)
@@ -481,19 +556,48 @@ public class Leaf implements Comparable<Leaf>, Serializable {
                 root.insertPointers(first);
             }
 
+
             // If pointer is not null, that means it is in the leaf layer
             if (pointer == null)
                 insertNode(root, newLeaf.getFirstValue(), leafSize, newLeaf, null);
             else
             {
+
                 Nodes tempNode = newLeaf.getFirstValue();
 
                 // If index split, we don't want duplicates because we are taking first value of the leaf
                 newLeaf.deleteNode(newLeaf.getFirstValue());
+
                 insertNode(root, tempNode, leafSize, newLeaf, null);
+
+
             }
+
+
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Insert node in overflow case
     // BOOLEAN INDICATES WHETHER IN LEAF OR INDEX LAYER. If we are in index layer, boolean is true.
@@ -501,14 +605,14 @@ public class Leaf implements Comparable<Leaf>, Serializable {
     // on the original leaf and the new leaf.
     public Leaf overflowSplit(Nodes node, Boolean isItIndex)
     {
-   //     System.out.println("split");
+        //     System.out.println("split");
         int i = 0;
         Leaf newLeaf = new Leaf(size);
         ArrayList<Nodes> newList = new ArrayList<Nodes>();
         ArrayList<Leaf> thisPointers = newPointers();
-      //  ArrayList<Leaf> newPointers = new ArrayList<Leaf>();
+        //  ArrayList<Leaf> newPointers = new ArrayList<Leaf>();
 
-      //  System.out.println(node.getValue());
+        //  System.out.println(node.getValue());
 
         int correctSize = size;
 
@@ -522,8 +626,12 @@ public class Leaf implements Comparable<Leaf>, Serializable {
         int nodeIncrement = 0;
         for (int x = 0; x < inLeaf.size() + 1; x++)
         {
+
+
             if (i < inLeaf.size())
             {
+
+
                 if ((i + 1) > (correctSize / 2)) {
                     newLeaf.insertNode(this.inLeaf.get(i));
 
@@ -534,6 +642,7 @@ public class Leaf implements Comparable<Leaf>, Serializable {
                                 newLeaf.insertPointers(pointers.get(i-1));
                         }
                         */
+
                 }
                 else {
                     newList.add(this.inLeaf.get(i));
@@ -542,8 +651,13 @@ public class Leaf implements Comparable<Leaf>, Serializable {
                             thisPointers.add(pointers.get(i-1));
                             */
                 }
+
                 i++;
+
             }
+
+
+
             if (x < pointers.size())
             {
                 // Original
@@ -555,6 +669,8 @@ public class Leaf implements Comparable<Leaf>, Serializable {
                     thisPointers.add(pointers.get(x));
             }
         }
+
+
 /*
         for (Nodes e : this.inLeaf)
         {
@@ -600,8 +716,11 @@ public class Leaf implements Comparable<Leaf>, Serializable {
 
     private ArrayList<Leaf> newPointers()
     {
-      //  for (int i = 0; i <= size; i++)
-       //     toReturn.add(null);
+
+
+        //  for (int i = 0; i <= size; i++)
+        //     toReturn.add(null);
+
         return new ArrayList<Leaf>();
     }
 
@@ -616,5 +735,6 @@ public class Leaf implements Comparable<Leaf>, Serializable {
             return Integer.MAX_VALUE;
 
         return ( this.getFirstValue().getValue().toString()).compareTo((String) o.getFirstValue().getValue().toString());
+
     }
 }

@@ -1,0 +1,4 @@
+SOURCES:
+
+STOPWORD LIST: http://www.ranks.nl/stopwords
+SENTIMENT WORD SCORE: http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010 

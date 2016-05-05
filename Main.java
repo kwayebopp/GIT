@@ -16,48 +16,44 @@ public class Main {
     private static int removalEnd = 20;
     private static int removalStart = 0;
 
-    public static void main(String[] args)
-    {
-     //   String values[] = {"dog", "cat", "stri", "shp", "she", "peo", "lit", "nud", "wre", "pie"};
+    public static void main(String[] args) {
+        //   String values[] = {"dog", "cat", "stri", "shp", "she", "peo", "lit", "nud", "wre", "pie"};
         //String values[] = {"19", "25", "5"};
-       // String values = "dog cat stri shp she peo lit nud wre pie";
+        // String values = "dog cat stri shp she peo lit nud wre pie";
 
         //String value = "Squarespace is looking for an inquisitive, data-driven market research intern with a keen eye for details to join our Business Strategy team this summer. This is a hands-on internship with a focus on customer insights and market research that will expose you to many different parts of the company. You will support the team in conducting qualitative and quantitative research, synthesizing key takeaways from large data sets, and communicating findings that could drive change throughout the company. ";
-       // String[] values = value.split(" ");
-       // int size = 200;
+        // String[] values = value.split(" ");
+        // int size = 200;
 
-   //    readAndAddToTree();
+        //    readAndAddToTree();
 
-  //     DeSerializeAndRebuildTree();
+        //     DeSerializeAndRebuildTree();
 
         Leaf root = null;
         root = new Leaf(size);
         TweetTree builder = new TweetTree(root);
         root = builder.getRoot();
         ArrayList<Tweet> tweets = TreeUtils.getFullDeck();
-        System.out.println(root.getPointers().size());
-   //     serializeTreeNonRecursive(root);
-   //     root = deserializeTreeNonRecursive(root);
-   //     System.out.println("Size: " + root.getSize());
-
+       // System.out.println(root.getPointers().size());
+        //     serializeTreeNonRecursive(root);
+        //     root = deserializeTreeNonRecursive(root);
+             System.out.println("Size: " + root.getMaxSize(0));
 
 
         String fullBack = "test";
-        while (fullBack != null)
-        {
-            System.out.println("Type search term!:" );
+        while (fullBack != null) {
+            System.out.println("Type search term!:");
             Scanner scanner = new Scanner(System.in);
             String s = scanner.nextLine();
-            PriorityQueue<Tweet> tweetQueue = TreeUtils.searchTree(s, builder);
-            while (!tweetQueue.isEmpty()) {
-                String tweetText = tweetQueue.poll().getText();
-                System.out.println(tweetText);
+            ArrayList<Tweet> tweetList= TreeUtils.searchTree(s, builder);
+            for (Tweet tweet : tweetList) {
+                String tweetText = tweet.getText();
+                System.out.println(tweetText + " ID " + tweet.getTF_IDF() + " SENTI " + tweet.getSentiScore());
             }
         }
     }
 
-    private static Leaf deserializeTreeNonRecursive(Leaf root)
-    {
+    private static Leaf deserializeTreeNonRecursive(Leaf root) {
         //  Leaf root = null;
         // Read from disk using FileInputStream
         FileInputStream f_in = null;
@@ -91,9 +87,7 @@ public class Main {
                 if ((leaf = (Leaf) obj_in.readObject()) != null) {
                     if (total == 0) {
                         root = leaf;
-                    }
-                    else if (totalNode == 0)
-                    {
+                    } else if (totalNode == 0) {
                         queue.add(leaf);
                     }
                     total += 1;
@@ -107,8 +101,7 @@ public class Main {
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (EOFException e)
-        {
+        } catch (EOFException e) {
             System.out.println("Next file!");
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,8 +110,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        for (Leaf e : queue)
-        {
+        for (Leaf e : queue) {
             root.insertPointers(e);
             System.out.println("DONE");
 
@@ -151,34 +143,26 @@ public class Main {
                     new ObjectInputStream(new BufferedInputStream(f_in));
 
 
-
-
-            tweetToReturn = (ArrayList<Tweet>)obj_in.readObject();
+            tweetToReturn = (ArrayList<Tweet>) obj_in.readObject();
             System.out.println("SIZE! " + tweetToReturn.size());
-
 
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch( EOFException e) {
+        } catch (EOFException e) {
             System.out.println("END OF FILE! IN THING!!!!");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
 
-
-
-
         return tweetToReturn;
     }
 
 
-    private static void serializeTweets(ArrayList<Tweet> tweets)
-    {
+    private static void serializeTweets(ArrayList<Tweet> tweets) {
         try {
             FileOutputStream f_out = new
                     FileOutputStream(serializeFile + "tweets" + "0" + ".ser");
@@ -199,8 +183,7 @@ public class Main {
         }
     }
 
-    private static void serializeTreeNonRecursive(Leaf root)
-    {
+    private static void serializeTreeNonRecursive(Leaf root) {
 
         FileOutputStream f_out = null;
         ObjectOutputStream obj_out = null;
@@ -216,10 +199,9 @@ public class Main {
             removedQueue.add(root);
 
 
-            removalEnd = root.getPointers().size()-2;
+            removalEnd = root.getPointers().size() - 2;
 
-            for (int i = removalStart; i < removalEnd; i ++)
-            {
+            for (int i = removalStart; i < removalEnd; i++) {
 
                 Leaf l = root.deleteLeaf(0);
                 removedQueue.add(l);
@@ -260,3 +242,4 @@ public class Main {
 
 
     }
+}

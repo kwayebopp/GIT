@@ -9,8 +9,8 @@ public class Nodes implements Comparable<Nodes>, Serializable {
 
     private Object value = null;
     private static int total = 0;
-    private int[] tweetList = new int[10];
-    private ArrayList<Integer> tweetList2 = new ArrayList<Integer>();
+
+    private ArrayList<Integer> tweetList = new ArrayList<Integer>();
     
     int storedValues = 0;
 
@@ -54,44 +54,20 @@ public class Nodes implements Comparable<Nodes>, Serializable {
 
 
 
-    public void setTweet(int tweet)
-   {
-        resizeTweet();
-        tweetList[total] = tweet;
-        storedValues++;
-    }
+
 
     public void setTweet(int tweet, int hap)
     {
-        tweetList2.add(tweet);
+        tweetList.add(tweet);
     }
 
-    private void resizeTweet()
-    {
-        int size = tweetList.length;
-        if (storedValues >= (size/2))
-        {
-            int[] tempTweetList = new int[size * 2];
-
-            for (int i = 0; i < tweetList.length; i++)
-            {
-                tempTweetList[i] = tweetList[i];
-            }
-
-            tweetList = tempTweetList;
-        }
 
 
-    }
 
-    public int[] getTweetList()
-    {
-        return tweetList;
-    }
 
     public ArrayList<Integer> getTweet()
     {
-        return tweetList2;
+        return tweetList;
     }
 
 

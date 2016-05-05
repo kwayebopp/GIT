@@ -77,7 +77,7 @@ public class RawTweetProcessor {//processes raw tweets from a text file
                 new BufferedReader(fileReader);
             
             FileOutputStream fileOut = new FileOutputStream("tweetObjs.ser");
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(fileOut));
             int count = 0;
             while((line = bufferedReader.readLine())!= null) {
                 split = line.split("\",");
@@ -90,7 +90,7 @@ public class RawTweetProcessor {//processes raw tweets from a text file
                     out.writeObject(tweet);
                     count++;
                     out.reset();
-                    if (count % 475000 == 0) {
+                    if (count % 500000 == 0) {
                         out.close();
                         fileOut.close();
                         fileOut = new FileOutputStream("tweetObjs" + count + ".ser");

@@ -21,34 +21,8 @@ public class Tweet implements java.io.Serializable{
     private HashMap<String, ArrayDeque<Integer>> features; //mapping of terms to their positions in tweet
     private double tf_idf;
     private double sentiScore; //sentiment score
-    
-    //compares on sentiScore
-    public static Comparator<Tweet> SENTI_ORDER = new Comparator<Tweet>() {
-        public int compare(Tweet a, Tweet b) {
-            double comp = a.sentiScore - b.sentiScore;
-            if (comp > 0) return 1;
-            else if (comp < 0) return -1;
-            else return 0;
-        }
-    };
-    
-    public static Comparator<Tweet> TFIDF_ORDER= new Comparator<Tweet>() {
-        public int compare(Tweet a, Tweet b) {
-            double comp = a.tf_idf - b.tf_idf;
-            if (comp > 0) return 1;
-            else if (comp < 0) return -1;
-            else return 0;
-        }
-    };
-    
-    public double getTF_IDF(){
-        return this.tf_idf;
-    }
-    
-    public void setTF_IDF(double val) {
-        this.tf_idf = val;
-    } 
-    
+
+
     public Tweet(){}
     
     public Tweet(String[] splitTweet) {
@@ -68,6 +42,34 @@ public class Tweet implements java.io.Serializable{
         sentiScore = Sentiment.getScore(this, sentiments);
         
     }
+
+    //compares on sentiScore
+    public static Comparator<Tweet> SENTI_ORDER = new Comparator<Tweet>() {
+        public int compare(Tweet a, Tweet b) {
+            double comp = a.sentiScore - b.sentiScore;
+            if (comp > 0) return 1;
+            else if (comp < 0) return -1;
+            else return 0;
+        }
+    };
+
+    public static Comparator<Tweet> TFIDF_ORDER= new Comparator<Tweet>() {
+        public int compare(Tweet a, Tweet b) {
+            double comp = a.tf_idf - b.tf_idf;
+            if (comp > 0) return 1;
+            else if (comp < 0) return -1;
+            else return 0;
+        }
+    };
+
+    public double getTF_IDF(){
+        return this.tf_idf;
+    }
+
+    public void setTF_IDF(double val) {
+        this.tf_idf = val;
+    }
+
     public Tweet(String t, String time, String usr, String id) {
         if (t == null || time == null || usr == null || id == null) throw new NullPointerException();
         text = t;

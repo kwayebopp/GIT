@@ -5,6 +5,9 @@ public class TreeUtils {
     private static ArrayList<Tweet> fullDeck = new ArrayList<Tweet>();
     private static long  startTime;
     private static HashMap<String, Integer> stops = Stops.buildList(); //stopword list
+    private static int count = 0;
+
+
     public static Leaf readAndAddTweets(Leaf root, int currentValue) {
         startTime = System.currentTimeMillis();
         Leaf first = new Leaf(Main.size);
@@ -12,9 +15,9 @@ public class TreeUtils {
         Nodes node = null;
         
         // int endValue = 11000000;
-        int endValue = 5000000;
+        int endValue = 500000;
   
-        int count = 0;
+
               
         try {        
             FileInputStream f_in = new FileInputStream(/*"D:\\PreProcessed\\TweetObjects\\tweetObjs" + currentValue + ".ser"*/ "tweetObjs.ser");
@@ -31,31 +34,34 @@ public class TreeUtils {
                 //Add to deck, get size;
                 fullDeck.add(tweet);
                 
-                if (count == 5000) break;
+              //  if (count == 5000) break;
   
                 for (String phrase : feats.keySet()) {
                     
                     //phrase = phrase.toLowerCase();
-     
-                    if (count % 250000 == 0) {
-                        System.out.println(count + " Elapsed TIme: " + 
-                                           (System.currentTimeMillis() - 
-                                            startTime) + 
-                                           " Average Inserts per second: " + 
-                                           count / ((System.currentTimeMillis() 
-                                                         - startTime) / 1000));
-                    }
+
                     
                     //  System.out.println("This is it!: " + phrase);
-                    //  if (!phrase.equals(" "))
+
                     root = Leaf.addToTree(root, phrase, Main.size, id);
                     //        System.out.println(root.getPointers().size());
+                }
+                root.setCount(count);
+
+                if (count % 250000 == 0) {
+                    System.out.println(count + " Elapsed TIme: " +
+                            (System.currentTimeMillis() -
+                                    startTime) +
+                            " Average Inserts per second: " +
+                            count / ((System.currentTimeMillis()
+                                    - startTime) / 1000));
                 }
                 
             }
         } catch(EOFException e)
         {
             System.out.println("ERROR! EOF");
+            System.out.println("COUNT: " + count);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -65,27 +71,37 @@ public class TreeUtils {
         System.out.println("file done!");
         
         currentValue += 500000;
-        
+
         
         if (currentValue < endValue)
             root = readAndAddTweets(root, currentValue);
         
         return root;
     }
-    
+
+    public int getCount()
+    {
+        return count;
+    }
+
+
+
+
     public static ArrayList<Tweet> getFullDeck()
     {
         return fullDeck;
     }
     
-    public static PriorityQueue<Tweet> searchTree(String query, TweetTree tree)
+    public static ArrayList<Tweet> searchTree(String query, TweetTree tree)
     {
         HashSet<Integer> visited = new HashSet<Integer>();
-        String[] q = query.toLowerCase().split("\\s+");
-        PriorityQueue<Tweet> tweets = new PriorityQueue<Tweet>(11, Tweet.SENTI_ORDER);
+        String[] q = query.toLowerCase().split(" ");
+        ArrayList<Tweet> tweets = new ArrayList<Tweet>();
         for (int m = 0; m < q.length; m++){
+            System.out.println(q[m]);
             if (!stops.containsKey(q[m])){
                 Nodes node = tree.getRoot().getNodeFromKey(q[m]);
+//                System.out.println("NODE! : " + node.getTweet().size());
                 if (node != null)
                 {
                     /*
@@ -100,8 +116,8 @@ public class TreeUtils {
                      */
                     
                     ArrayList<Integer> list = node.getTweet();
-                    System.out.println(list.size());
-                    int num = 1000;
+                 //   System.out.println(list.size());
+                    int num = 500;
                     
                     
                     if (list.size() < num)
@@ -109,22 +125,42 @@ public class TreeUtils {
                         num = list.size();
                     }
                     
-                    for (int i = 0; i < num && !visited.contains(list.get(i)); i++){
+                    for (int i = 0; i < num; i++){
                         //System.out.println(fullDeck.get(list.get(i)).getText() + " id: " + list.get(i));
-                        tweets.add(fullDeck.get(list.get(i)));
-                        visited.add(i);
+                        if (!visited.contains(list.get(i)))
+                        {
+                            tweets.add(fullDeck.get(list.get(i)));
+                            visited.add(list.get(i));
+                        }
                     }
                     
                     for (Tweet t : tweets) {
                         double tfidf = 0;
+                        int i = 1;
+                        System.out.println(t.getSentiScore());
+
                         for (String s : q) {
-                            tfidf += TFIDF.calc(s, t, tree);
+                            double tempIDF = TFIDF.calc(s, t, tree);
+                            tfidf += tempIDF;
+                            if (tempIDF > 0)
+                                i++;
                         }
+                       // if (i == q.length)
+                     //   {
+                            tfidf += (i * 20);
+                     //   }
                         t.setTF_IDF(tfidf);
                     }
                 }
             }
         }
+
+
+        Collections.sort(tweets, Tweet.SENTI_ORDER);
+        Collections.sort(tweets, Tweet.TFIDF_ORDER);
+
+
+
         return tweets;
     }
 }
