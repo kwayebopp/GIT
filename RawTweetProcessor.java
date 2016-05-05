@@ -87,9 +87,19 @@ public class RawTweetProcessor {//processes raw tweets from a text file
                 
                 Tweet tweet = new Tweet(split);
                 try {
-                    out.writeObject(tweet);
+
+
+                    if (count % 4 == 0)
+                        out.writeObject(tweet);
+
                     count++;
-                    out.reset();
+
+                    if (count % 100000 == 0)
+                        out.reset();
+
+
+
+                   /*
                     if (count % 500000 == 0) {
                         out.close();
                         fileOut.close();
@@ -97,7 +107,10 @@ public class RawTweetProcessor {//processes raw tweets from a text file
                         out = new ObjectOutputStream(fileOut);
                             
                     }
-                    if (count % 1000 == 0) System.err.println(count);
+                    */
+
+
+                    if (count % 100000 == 0) System.err.println(count);
                     out.flush();
                 } catch(IOException i){i.printStackTrace();}
                 

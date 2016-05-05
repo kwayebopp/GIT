@@ -17,17 +17,7 @@ public class Main {
     private static int removalStart = 0;
 
     public static void main(String[] args) {
-        //   String values[] = {"dog", "cat", "stri", "shp", "she", "peo", "lit", "nud", "wre", "pie"};
-        //String values[] = {"19", "25", "5"};
-        // String values = "dog cat stri shp she peo lit nud wre pie";
 
-        //String value = "Squarespace is looking for an inquisitive, data-driven market research intern with a keen eye for details to join our Business Strategy team this summer. This is a hands-on internship with a focus on customer insights and market research that will expose you to many different parts of the company. You will support the team in conducting qualitative and quantitative research, synthesizing key takeaways from large data sets, and communicating findings that could drive change throughout the company. ";
-        // String[] values = value.split(" ");
-        // int size = 200;
-
-        //    readAndAddToTree();
-
-        //     DeSerializeAndRebuildTree();
 
         Leaf root = null;
         root = new Leaf(size);
@@ -41,14 +31,22 @@ public class Main {
 
 
         String fullBack = "test";
+
+
         while (fullBack != null) {
             System.out.println("Type search term!:");
             Scanner scanner = new Scanner(System.in);
             String s = scanner.nextLine();
             ArrayList<Tweet> tweetList= TreeUtils.searchTree(s, builder);
+
+            int count = 0;
             for (Tweet tweet : tweetList) {
+
+                if (count == 10)
+                    break;
                 String tweetText = tweet.getText();
                 System.out.println(tweetText + " ID " + tweet.getTF_IDF() + " SENTI " + tweet.getSentiScore());
+                count++;
             }
         }
     }

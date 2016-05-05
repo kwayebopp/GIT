@@ -32,6 +32,8 @@ public class Nodes implements Comparable<Nodes>, Serializable {
     public static Comparator<Nodes> nodesComparator = new Comparator<Nodes>() {
 
         public int compare(Nodes o1, Nodes o2) {
+
+
             return ((String) o1.value).compareTo((String) o2.value);
 
         }
@@ -49,7 +51,11 @@ public class Nodes implements Comparable<Nodes>, Serializable {
 
     @Override
     public int compareTo(Nodes o) {
-        return ((String) o.value).compareTo((String) this.value);
+
+        // OLD WAY, LETS DO NEW WAY!
+        //   return ((String) o.value).compareTo((String) this.value);
+
+        return ((String) this.value).compareTo((String) o.value);
     }
 
 

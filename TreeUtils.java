@@ -15,13 +15,20 @@ public class TreeUtils {
         Nodes node = null;
         
         // int endValue = 11000000;
-        int endValue = 500000;
+        int endValue = 2;
   
 
               
         try {        
-            FileInputStream f_in = new FileInputStream(/*"D:\\PreProcessed\\TweetObjects\\tweetObjs" + currentValue + ".ser"*/ "tweetObjs.ser");
-            
+        //    FileInputStream f_in = new FileInputStream(/*"D:\\PreProcessed\\TweetObjects\\tweetObjs" + currentValue + ".ser"*/ "tweetObjs.ser");
+
+
+
+            String fileName = ("D:\\PreProcessed\\TweetObjects\\tweetObjs" + currentValue + ".ser");
+            if (currentValue == 0)
+                fileName = "tweetObjs.ser";
+
+            FileInputStream f_in = new FileInputStream(fileName);
             // Write object with ObjectOutputStream
             ObjectInputStream obj_in = new
                 ObjectInputStream(new BufferedInputStream(f_in));
@@ -34,10 +41,18 @@ public class TreeUtils {
                 //Add to deck, get size;
                 fullDeck.add(tweet);
                 
-              //  if (count == 5000) break;
+                if (count == 3000000) break;
   
                 for (String phrase : feats.keySet()) {
-                    
+
+
+                    // LEMMAZATING
+                    if (phrase.length() > 8)
+                    {
+                   //     System.out.println("LEMMED!");
+                        phrase = phrase.substring(0, 8);
+                    }
+
                     //phrase = phrase.toLowerCase();
 
                     
@@ -97,6 +112,15 @@ public class TreeUtils {
         HashSet<Integer> visited = new HashSet<Integer>();
         String[] q = query.toLowerCase().split(" ");
         ArrayList<Tweet> tweets = new ArrayList<Tweet>();
+
+        for (int i = 0; i < q.length; i++)
+        {
+            if (q[i].length() > 8)
+            {
+                q[i] = q[i].substring(0, 8);
+            }
+        }
+
         for (int m = 0; m < q.length; m++){
             System.out.println(q[m]);
             if (!stops.containsKey(q[m])){
@@ -117,7 +141,7 @@ public class TreeUtils {
                     
                     ArrayList<Integer> list = node.getTweet();
                  //   System.out.println(list.size());
-                    int num = 500;
+                    int num = 500000;
                     
                     
                     if (list.size() < num)
@@ -137,7 +161,7 @@ public class TreeUtils {
                     for (Tweet t : tweets) {
                         double tfidf = 0;
                         int i = 1;
-                        System.out.println(t.getSentiScore());
+                 //       System.out.println(t.getSentiScore());
 
                         for (String s : q) {
                             double tempIDF = TFIDF.calc(s, t, tree);
@@ -156,8 +180,11 @@ public class TreeUtils {
         }
 
 
+
+
         Collections.sort(tweets, Tweet.SENTI_ORDER);
         Collections.sort(tweets, Tweet.TFIDF_ORDER);
+        Collections.reverse(tweets);
 
 
 
